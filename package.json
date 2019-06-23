@@ -1,0 +1,30 @@
+{
+  "name": "socket-server-module",
+  "version": "0.0.1",
+  "description": "Server module for socket chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/chiranjeevitapal/socket-server.git"
+  },
+  "keywords": [
+    "socket",
+    "server",
+    "socket",
+    "server"
+  ],
+  "author": "Chiranjeevi Tapal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chiranjeevitapal/socket-server/issues"
+  },
+  "homepage": "https://github.com/chiranjeevitapal/socket-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0"
+  }
+}
