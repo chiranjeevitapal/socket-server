@@ -62,6 +62,13 @@
             $('#message-box').val('');
             return false;
         });
+        socket.on('request nickname', () => {
+            while (!nickname) {
+                var nickname = prompt('Nickname');
+            };
+            $('#userName h3').text("Welcome "+nickname);
+            socket.emit('nickname chosen', nickname);
+        })
         socket.on('chat message', (message) => {
             $('#messages').append($('<li>').text(message));
         });
@@ -72,6 +79,9 @@
 </script>
 
 <body>
+    <div id="userName">
+        <h3></h3>
+    </div>
     <div id="broad-cast"><span></span></div>
     <ul id="messages"></ul>
     <form action="">
