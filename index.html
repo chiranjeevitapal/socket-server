@@ -1,29 +1,55 @@
-<!doctype html>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/frontend.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+
 <html>
 
 <head>
-    <title>Socket.IO chat</title>
-    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css"
+        rel="stylesheet">
+    <link href="/css/frontend.css" type="text/css" rel="stylesheet">
 </head>
-<script src="/socket.io/socket.io.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<script src="/js/frontend.js"></script>
 
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-sm" id="userName">
-                <h3></h3>
+        <h3 class=" text-center" id="user_name"></h3>
+        <div class="messaging">
+            <div class="inbox_msg">
+                <div class="inbox_people">
+                    <div class="headind_srch">
+                        <div class="recent_heading">
+                            <h4>Online Users</h4>
+                        </div>
+                        <div class="srch_bar">
+                            <div class="stylish-input-group">
+                                <input type="text" class="search-bar" placeholder="Search">
+                                <span class="input-group-addon">
+                                    <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+                                </span> </div>
+                        </div>
+                    </div>
+                    <div class="inbox_chat" id="online-users">
+                    </div>
+                </div>
+                <div class="mesgs">
+                    <div class="msg_history" id="msg_history">
+                    </div>
+                    <div class="type_msg">
+                        <div class="input_msg_write">
+                            <form id="chat_form">
+                                <input type="text" class="write_msg" id="message-box" placeholder="Type a message" />
+                                <button class="msg_send_btn" type="submit"><i class="fa fa-paper-plane-o"
+                                        aria-hidden="true"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm" id="broad-cast">
-                <span></span>
-            </div>
-            <div class="col-sm">
-                <ul id="messages"></ul>
-            </div>
-            <form action="">
-                <input id="message-box" autocomplete="off" /><button class="btn btn-md btn-primary">Send</button>
-            </form>
         </div>
     </div>
 </body>

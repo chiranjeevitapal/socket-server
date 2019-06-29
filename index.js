@@ -4,7 +4,7 @@ let app = require('express')();
 let http = require('http').createServer(app);
 let io = require('socket.io')(http);
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index_new.html');
+    res.sendFile(__dirname + '/index.html');
 });
 app.use(express.static(path.join(__dirname, "public")));
 let clients = 0;
@@ -32,8 +32,11 @@ io.on('connection', (socket) => {
     })
     clients++;
 
-    socket.on('chat message', (message) => {
-        io.emit('chat message', message);
+    socket.on('chat message', (data) => {
+        console.log("chat message received from client... " + data.message);
+        console.log("emitting socket id ... " + socket.id);
+        console.log("user.nickname... " + data.nickname);
+        io.emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
     });
     socket.on('disconnect', () => {
         clients--;
