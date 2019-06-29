@@ -1,9 +1,12 @@
+let express = require('express');
+let path = require('path');
 let app = require('express')();
 let http = require('http').createServer(app);
 let io = require('socket.io')(http);
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/index_new.html');
 });
+app.use(express.static(path.join(__dirname, "public")));
 let clients = 0;
 let usersList = [];
 function User(id, name) {
@@ -23,8 +26,8 @@ io.on('connection', (socket) => {
     socket.on('nickname chosen', (nickname) => {
         console.log("Nickname chosen : " + nickname);
         new User(socket.id, nickname);
-        io.sockets.emit('broadcast', {
-            description: 'Users Online ' + onlineUserNames()
+        io.sockets.emit('online users', {
+            onlineUsers: onlineUserNames()
         });
     })
     clients++;
@@ -36,8 +39,8 @@ io.on('connection', (socket) => {
         clients--;
         deleteUser(socket.id);
         setTimeout(() => {
-            io.sockets.emit('broadcast', {
-                description: 'Users Online ' + onlineUserNames()
+            io.sockets.emit('online users', {
+                onlineUsers: onlineUserNames()
             });
         }, 1);
     });
