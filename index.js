@@ -7,7 +7,6 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 app.use(express.static(path.join(__dirname, "public")));
-let clients = 0;
 let usersList = [];
 function User(id, name) {
     this.userid = id;
@@ -29,8 +28,7 @@ io.on('connection', (socket) => {
         io.sockets.emit('online users', {
             onlineUsers: usersList
         });
-    })
-    clients++;
+    });
 
     socket.on('chat message', (data) => {
         console.log("chat message received from client... " + data.message);
@@ -38,8 +36,8 @@ io.on('connection', (socket) => {
         console.log("user.nickname... " + data.nickname);
         io.emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
     });
+
     socket.on('disconnect', () => {
-        clients--;
         deleteUser(socket.id);
         setTimeout(() => {
             io.sockets.emit('online users', {
