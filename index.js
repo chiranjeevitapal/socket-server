@@ -32,9 +32,10 @@ io.on('connection', (socket) => {
 
     socket.on('chat message', (data) => {
         console.log("chat message received from client... " + data.message);
-        console.log("emitting socket id ... " + socket.id);
+        console.log("Receiver's socket id ... " + data.receiverId);
         console.log("user.nickname... " + data.nickname);
-        io.emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
+        socket.to(data.receiverId).emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
+        //io.emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
     });
 
     socket.on('disconnect', () => {
