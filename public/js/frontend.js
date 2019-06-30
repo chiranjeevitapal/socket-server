@@ -27,24 +27,19 @@ $(() => {
         console.log("Current user socket id : " + socket.io.engine.id);
         let msg_template = "";
         if (socket.io.engine.id != data.socketid) {
-            setChatHistory(data.msg, "From:");
+            setChatHistory(data.msg, "Fr:");
             incomingMessage(data.msg, data.nickname);
-            setInterval(updateScroll, 1000);
         }
     });
     socket.on('online users', function (response) {
         $('#online-users').empty();
         response.onlineUsers.forEach(user => {
             if (user.userid !== socket.io.engine.id) {
-                let template = '<div class="online_list" onclick=privateChat("' + user.userid + '")><div class="online_people"><div class="chat_img"> <img src="/images/user-profile.png" alt="user_image"> </div> <div class="chat_ib"><h5>' + user.nickname + ' </h5></div></div></div>';
+                let template = '<div class="online_list" onclick=privateChat("' + user.userid + '","' + user.nickname + '")><div class="online_people"><div class="chat_img"> <img src="/images/user-profile.png" alt="user_image"> </div> <div class="chat_ib"><h5>' + user.nickname + ' </h5></div></div></div>';
                 $('#online-users').append(template);
             }
         });
     });
-
-    $('#msg_history').animate({
-        scrollTop: $('#msg_history').get(0).scrollHeight
-    }, 1000);
 });
 
 updateScroll = () => {
@@ -53,22 +48,34 @@ updateScroll = () => {
     }, "fast");
 }
 
-privateChat = (userId) => {
+privateChat = (userId, nickname) => {
+    console.log("coming into privateChat...");
+    $("#msg_history").empty();
     receiverId = userId;
     var chats = localStorage.getItem(userId);
-    let temp = [];
     if (chats && chats.length > 0) {
-        if (typeof (chats) == String) {
-            temp.push(chats);
-            chats = temp;
-        }
         console.log("Chat history is available ... loading ...")
         console.log(chats);
+        console.log("type of chats " + typeof chats);
+        console.log("type of chats " + typeof chats == 'string');
+        console.log("type of chats " + typeof chats === 'string');
+        console.log("type of chats " + typeof chats === 'object');
+        if (typeof chats == 'string') {
+            console.log("coming into string section ");
+            let chatArr = chats.split(",");
+            chats = chatArr;
+        }
+        console.log(chats);
+        console.log("type of chats " + typeof chats);
+        console.log("type of chats " + typeof chats == 'string');
+        console.log("type of chats " + typeof chats === 'string');
+        console.log("type of chats " + typeof chats === 'object');
+        console.log("coming into array section ");
         chats.forEach((chat) => {
-            if (chat.indexOf("To:") != -1) {
-                outgoingMessage(chat.substring(2));
+            if (chat.startsWith("To:")) {
+                outgoingMessage(chat.substring(3));
             } else {
-                incomingMessage(chat.substring(2));
+                incomingMessage(chat.substring(3), nickname);
             }
         })
     }
@@ -103,12 +110,23 @@ incomingMessage = (text, nickname) => {
 setChatHistory = (message, fromOrTo) => {
     let msg = [];
     let history = localStorage.getItem(receiverId);
-    if (history && history.length > 0) {
-        msg = history;
+    console.log("Chat history " + history);
+    if (history) {
+        console.log("history exists ... pushing");
+        if (typeof history === 'string') {
+            msg.push(history);
+        } else {
+            history.forEach((str) => {
+                msg.push(str);
+            });
+        }
+        msg.push(fromOrTo + message);
     } else {
-        msg = [];
-        msg.push("fromOrTo:" + message);
+        console.log("history does not exists ... pushing");
+        msg.push(fromOrTo + message);
     }
-    localStorage.setItem(receiverId, msg);
+    console.log("type of msg is " + typeof msg);
+    console.log(msg);
 
+    localStorage.setItem(receiverId, msg);
 }
