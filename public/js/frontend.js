@@ -48,8 +48,10 @@ $(() => {
     socket.on('online users', function (response) {
         $('#online-users').empty();
         response.onlineUsers.forEach(user => {
-            let template = '<div class="online_list"><div class="online_people"><div class="chat_img"> <img src="/images/user-profile.png" alt="user_image"> </div> <div class="chat_ib"><h5>' + user + ' </h5></div></div></div>';
-            $('#online-users').append(template);
+            if (user.userid !== socket.io.engine.id) {
+                let template = '<div class="online_list" onclick=privateChat("' + user.userid + '")><div class="online_people"><div class="chat_img"> <img src="/images/user-profile.png" alt="user_image"> </div> <div class="chat_ib"><h5>' + user.nickname + ' </h5></div></div></div>';
+                $('#online-users').append(template);
+            }
         });
     });
 
@@ -62,4 +64,8 @@ updateScroll = () => {
     $('#msg_history').animate({
         scrollTop: $('#msg_history')[0].scrollHeight
     }, "fast");
+}
+
+privateChat = (userId) => {
+    alert(userId);
 }

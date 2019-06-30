@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
         console.log("Nickname chosen : " + nickname);
         new User(socket.id, nickname);
         io.sockets.emit('online users', {
-            onlineUsers: onlineUserNames()
+            onlineUsers: usersList
         });
     })
     clients++;
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
         deleteUser(socket.id);
         setTimeout(() => {
             io.sockets.emit('online users', {
-                onlineUsers: onlineUserNames()
+                onlineUsers: usersList
             });
         }, 1);
     });
@@ -60,14 +60,6 @@ let deleteUser = (id) => {
             console.log(usersList);
         }
     });
-}
-
-let onlineUserNames = () => {
-    let names = [];
-    usersList.forEach((user) => {
-        names.push(user.nickname);
-    });
-    return names;
 }
 
 http.listen(3000, () => {
