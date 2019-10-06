@@ -1,28 +1,35 @@
 $(() => {
     $("#mesgs").hide();
     let socket = io();
-    let nickname = "";
-    var receiverId = "";
-    $('form').submit((e) => {
-        console.log("form submitted...");
+    let userDetails = new User('', '', '', '', 'Idle');
+    $("form").submit(function (e) {
         e.preventDefault();
-        let text = $('#message-box').val();
-        if (text.length > 0)
-            socket.emit('chat message', { message: $('#message-box').val(), nickname: nickname, receiverId: this.receiverId });
-        $('#message-box').val('');
-        setChatHistory(text, "To:");
-        outgoingMessage(text);
-        updateScroll();
-        return false;
+        let userName = $('#user-name').val();
+        let userAge = $('#user-age').val();
+        let userGender = $('#user-gender').val();
+        userDetails = new User(socket.io.engine.id, userName, userAge, userGender, 'Idle');
+        $('#userDetailsModal').modal('hide');
+        socket.emit('user_details', userDetails);
     });
-    socket.on('request nickname', () => {
-        while (!nickname) {
-            nickname = prompt('Nickname');
-        };
-        $('#user_name').text(nickname);
-        socket.emit('nickname chosen', nickname);
+    $("#search-chat-mate").on('click', () => {
+        console.log(userDetails['name']+ " Searching...");
+        userDetails['status'] = 'Searching';
+        socket.emit('find_random_user', userDetails);
     })
-    socket.on('socket message', (data) => {
+    socket.on('prompt_user_details', () => {
+        $('#userDetailsModal').modal('show');
+    });
+
+    socket.on('chat_mate', (chatMate) => {
+        if(chatMate == null){
+            alert('Folks are busy chatting. Try again.');
+        }else{
+            userDetails['status'] = 'Chatting';
+            alert('you are connected to '+chatMate.name);
+            socket.emit('inform-chat-mate', chatMate);
+        }
+    });
+    /* socket.on('socket message', (data) => {
         console.log("Message is from socket : " + data.socketid);
         console.log("Current user socket id : " + socket.io.engine.id);
         let msg_template = "";
@@ -30,8 +37,8 @@ $(() => {
             setChatHistory(data.msg, "Fr:");
             incomingMessage(data.msg, data.nickname);
         }
-    });
-    socket.on('online users', function (response) {
+    }); */
+    /* socket.on('online users', function (response) {
         $('#online-users').empty();
         response.onlineUsers.forEach(user => {
             if (user.userid !== socket.io.engine.id) {
@@ -39,7 +46,7 @@ $(() => {
                 $('#online-users').append(template);
             }
         });
-    });
+    }); */
 });
 
 updateScroll = () => {

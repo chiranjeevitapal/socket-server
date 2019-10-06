@@ -1,8 +1,9 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/frontend.js"></script>
+<script src="/js/user.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
 
@@ -17,6 +18,9 @@
 
 <body>
     <div class="container">
+        <button type="button" id="search-chat-mate" class="btn btn-danger">START </button>
+    </div>
+    <!-- <div class="container">
         <h3 class=" text-center" id="user_name"></h3>
         <div class="messaging">
             <div class="inbox_msg">
@@ -41,17 +45,58 @@
                     </div>
                     <div class="type_msg">
                         <div class="input_msg_write">
-                            <form id="chat_form">
+                             <form >
                                 <input type="text" class="write_msg" id="message-box" placeholder="Type a message" />
                                 <button class="msg_send_btn" type="submit"><i class="fa fa-paper-plane-o"
                                         aria-hidden="true"></i></button>
-                            </form>
+                            </form> 
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div> -->
+    <!-- Modal -->
+
+    <div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="userDetailsModalLabel"
+        aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userDetailsModalLabel">Details</h5>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button> -->
+                </div>
+                <form>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="user-name" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" id="user-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="user-age" class="col-form-label">Age:</label>
+                            <input type="text" class="form-control" id="user-age">
+                        </div>
+                        <div class="form-group">
+                            <label for="user-gender" class="col-form-label">Gender:</label>
+                            <select type="text" class="form-control" id="user-gender">
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!--  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+                        <input type="submit" value="submit" class="btn btn-primary" />
+                    </div>
+                </form>
+                </form>
+            </div>
+        </div>
     </div>
+    </form>
 </body>
 
 </html>
