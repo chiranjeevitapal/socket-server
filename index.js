@@ -9,14 +9,7 @@ app.get('/', (req, res) => {
 });
 app.use(express.static(path.join(__dirname, "public")));
 let onlineUsers = [];
-/* function User(id, name) {
-    this.userid = id;
-    this.nickname = name;
-    this.pushToTheList = function () {
-        usersList.push(this);
-    }
-    this.pushToTheList();
-} */
+let rooms = [];
 
 io.on('connection', (socket) => {
     //Prompt UI to render user details
@@ -26,80 +19,67 @@ io.on('connection', (socket) => {
     //populate the user into online users list
     socket.on('user_details', (userDetails) => {
         onlineUsers.push(userDetails);
-        console.log("--------- Online Users ------------");
-        console.log(onlineUsers);
-        console.log("-----------------------------------")
+        printOnlineUsers();
     });
 
-    //Find a random idle user for chat
-    socket.on('find_random_user', (userDetails) => {
-        for (let i = 0; i < onlineUsers.length; i++) {
-            if (onlineUsers[i].id == userDetails.id) {
-                onlineUsers[i].status = userDetails.status;
+    socket.on('create_or_join_room', () => {
+        console.log(socket.id + " is trying to create or join a room.");
+        let socket_room = Object.keys(socket.rooms).filter(item => item != socket.id);
+        if (socket_room != null) {
+            socket.leave(socket_room);
+        }
+        let room_name = null;
+        if (rooms.length != 0) {
+            for (let i = 0; i < rooms.length; i++) {
+                let clients = io.of('/').adapter.rooms[rooms[i]];
+                if (clients != undefined && clients.length < 2) {
+                    room_name = rooms[i];
+                }
             }
         }
-        var randomUser = null;
-        findRandomBreaker = setInterval(function () {
-            randomUser = findRandomUser(userDetails['id']);
-            if (randomUser != null) {
-                console.log("========================");
-                console.log(randomUser);
-                console.log("========================");
-                for (let i = 0; i < onlineUsers.length; i++) {
-                    if (onlineUsers[i].id == userDetails.id) {
-                        onlineUsers[i].status = "Chatting";
-                    }
-                }
-                socket.emit('chat_mate', randomUser);
-            }
-        }, 3000);
-    });
+        if (room_name == null || rooms.length == 0) {
+            console.log("creating a new room");
+            room_name = 'room-' + (Math.floor(Math.random() * 100000000) + 1);
+            rooms.push(room_name);
+        }
+        socket.join(room_name);
 
-    /* socket.on('chat message', (data) => {
-        console.log("chat message received from client... " + data.message);
-        console.log("Receiver's socket id ... " + data.receiverId);
-        console.log("user.nickname... " + data.nickname);
-        socket.to(data.receiverId).emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
-        //io.emit('socket message', { msg: data.message, socketid: socket.id, nickname: data.nickname });
-    }); */
+        let clients = io.of('/').adapter.rooms[room_name];
+        console.log(clients);
+        if (clients != undefined && clients.length == 2) {
+            io.in(room_name).emit('chat_session_created');
+        }
+    })
+
+    socket.on('send_message', (message) => {
+        let socket_room = Object.keys(socket.rooms).filter(item => item != socket.id);
+        socket.broadcast.in(socket_room).emit('message', message);
+    });
 
     //Delete the user details from the online users array when user leaves the session
     socket.on('disconnect', () => {
         deleteUser(socket.id);
-        /*  setTimeout(() => {
-             io.sockets.emit('online users', {
-                 onlineUsers: usersList
-             });
-         }, 1); */
+        let socket_room = Object.keys(socket.rooms).filter(item => item != socket.id);
+        console.log(socket_room);
+        socket.broadcast.in(socket_room).emit('message', "your mate left the chat.");
     });
 });
 
-let findRandomUser = (currentUserId) => {
-    let randomIndex = parseInt(Math.floor(Math.random() * onlineUsers.length));
-    console.log(currentUserId + " is looking for a chat mate at index " + randomIndex)
-    let onlineUser = onlineUsers[randomIndex];
-    console.log("potential match : " + onlineUser['name'] + "-" + onlineUser['status']);
-    if (onlineUser['status'] === 'Searching' && currentUserId != onlineUser['id']) {
-        console.log(findRandomBreaker);
-        clearInterval(findRandomBreaker);
-        console.log(currentUserId + " found " + onlineUser['name']);
-        return onlineUser;
-    }
-}
+
 //Delete use form the available users array
 let deleteUser = (id) => {
-    console.log("To be deleted : " + id);
-    onlineUsers.forEach((user) => {
-        if (user.userid === id) {
-            console.log("id matched.. deleting... ")
-            const index = onlineUsers.indexOf(user);
-            console.log("index: " + index);
-            onlineUsers.splice(index, 1);
-            console.log(usersList);
-        }
-    });
+    console.log("deleting user : " + id);
+    const index = onlineUsers.findIndex(x => x.id === id);
+    onlineUsers.splice(index, 1);
+    printOnlineUsers();
 }
 
 http.listen(3000, () => {
     console.log('Server is listening on port *:3000');
 });
+
+let printOnlineUsers = () => {
+    console.log("## Online Users ##");
+    console.log(onlineUsers);
+    console.log("##################");
+};
